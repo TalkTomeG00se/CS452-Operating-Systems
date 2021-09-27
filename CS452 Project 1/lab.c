@@ -1,7 +1,7 @@
 /**
- * Name: Jane Doe
- * Email: janedoe@u.boisestate.edu
- * Github Username: jdoe
+ * Name: Colten Davis
+ * Email: coltendavis@u.boisestate.edu
+ * Github Username: TalkTomeG00se
  */
 #include "lab.h"
 #include <stdio.h>
@@ -45,6 +45,11 @@ void serial_mergesort(int A[], int p, int r)
 		serial_mergesort(A, q+1, r);
 		merge(A, p, q, r);
 	}
+}
+
+void parallel_mergersort {
+
+	
 }
 
 /*

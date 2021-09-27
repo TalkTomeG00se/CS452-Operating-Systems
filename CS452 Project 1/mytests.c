@@ -107,11 +107,26 @@ int check_if_sorted(int A[], int n)
 int main(int argc, char **argv) {
 
 	if (argc < 2) { // there must be at least one command-line argument
-			fprintf(stderr, "Usage: %s <input size> [<seed>] \n", argv[0]);
+			fprintf(stderr, "Usage: %s <input size> <number of threads> [<seed>] \n", argv[0]);
 			exit(1);
 	}
 
-	int n = atoi(argv[1]);
+	int n = atoi(argv[1]); // input size, items to be sorted
+
+	int numThreads = atoi(argv[2]); // num threads 
+
+	if(numThreads <=0){ // if threads less than or equal to 0
+
+		numThreads = DEFAULT_THREADS; // setting default value
+
+	}
+
+	if(numThreads > MAX_THREADS){ // user used too many threads
+
+		fprintf(stderr, "Please limit the number of threads used to 10 or less"); 
+		exit(1);
+
+	}
 	int seed = 1;
 	if (argc == 3)
 		seed = atoi(argv[2]);
