@@ -102,6 +102,21 @@ int check_if_sorted(int A[], int n)
 	return TRUE;
 }
 
+void createThreads {
+
+
+}
+
+void joinThreads {
+
+
+}
+
+void mergeProcesses {
+
+	
+}
+
 
 
 
@@ -118,7 +133,7 @@ int main(int argc, char **argv) {
 
 	if(numThreads <= 0){ // if threads less than or equal to 0
 
-		numThreads = DEFAULT_THREADS; // setting default value
+		numThreads = DEFAULT_THREADS; // setting default value of 1
 
 	}
 
@@ -128,9 +143,22 @@ int main(int argc, char **argv) {
 		exit(1);
 
 	}
+
+	int makeThreads = n / numThreads; // input size divided by number of threads
+
+	int distributeThreads = n % numThreads; // if n is not able to be split evenly when divided by given num of threads
+
+	struct args *params = malloc(numThreads * sizeof(struct args)); // allocating memory for the parameters to be passed to each thread
+
+	for(int i = 0; i < numThreads; i++){ // looping through and adding input size to each thread
+
+		params[i].A = A;
+	}
+
 	int seed = 1;
 	if (argc == 3)
 		seed = atoi(argv[2]);
+	
 
 	int *A = (int *) malloc(sizeof(int) * (n+1)); // n+1 since we are using A[1]..A[n]
 
@@ -143,7 +171,37 @@ int main(int argc, char **argv) {
 
 	// sort the input (and time it)
 	start_time = getMilliSeconds();
-	serial_mergesort(A,1,n);
+
+	pthread_t givenThreads[numThreads]; // setting the number of threads
+
+	// serial_mergesort(A,1,n); don't need as switching to a threaded mergesort
+
+	for(int i = 0; i < numThreads; i++){
+
+		params[i].p = (makeThreads * i) + 1; //
+
+		params[i].r = params[i].p + makeThreads -1; //
+
+		if(i == numThreads -1){ //
+
+			params[i].r =params[i].r + distributeThreads; //
+		}
+
+		pthread_create(&givenThreads[i], NULL, parallel_mergersort, &params[i]); //
+	}
+
+	for(int i = 0; i < numThreads; i++){
+
+		pthread_join(givenThreads[i], NULL);
+	}
+
+	struct args *mergeThreads = &params[0];
+
+	for(int i = 1); i < numThreads,i++){
+
+		merge(A, mergeThreads->p, params[i].p -1, params[i].r);
+	}
+
 	sorting_time = getMilliSeconds() - start_time;
 
 	// print results if correctly sorted otherwise cry foul and exit
@@ -153,6 +211,8 @@ int main(int argc, char **argv) {
 		printf("%s: sorting failed!!!!\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
+
+	free(params);
 	free(A);
 
 	exit(EXIT_SUCCESS);

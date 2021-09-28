@@ -50,6 +50,12 @@ void serial_mergesort(int A[], int p, int r)
 
 void parallel_mergersort(void *input) {
 
+	struct args *param = (struct args*) userInput;
+
+	serial_mergesort(param->A, param->p, param->r);
+
+	// pthread_exit(NULL);
+
 	
 }
 
