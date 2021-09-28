@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <error.h>
 #include "lab.h"
+#include <pthread.h> // adding pthread library
 
 // function prototypes
 int check_if_sorted(int A[], int n);
@@ -106,7 +107,7 @@ int check_if_sorted(int A[], int n)
 
 int main(int argc, char **argv) {
 
-	if (argc < 2) { // there must be at least one command-line argument
+	if (argc < 3) { // there must be at least one command-line argument. Note: changed to 3 from 2, added argument for threads
 			fprintf(stderr, "Usage: %s <input size> <number of threads> [<seed>] \n", argv[0]);
 			exit(1);
 	}
@@ -115,7 +116,7 @@ int main(int argc, char **argv) {
 
 	int numThreads = atoi(argv[2]); // num threads 
 
-	if(numThreads <=0){ // if threads less than or equal to 0
+	if(numThreads <= 0){ // if threads less than or equal to 0
 
 		numThreads = DEFAULT_THREADS; // setting default value
 

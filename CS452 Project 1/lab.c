@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
+#include <pthread.h> // adding pthread library
 
 
 /*
@@ -47,7 +48,7 @@ void serial_mergesort(int A[], int p, int r)
 	}
 }
 
-void parallel_mergersort {
+void parallel_mergersort(void *input) {
 
 	
 }
