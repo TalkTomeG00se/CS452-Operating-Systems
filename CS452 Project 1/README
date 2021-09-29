@@ -33,9 +33,10 @@ instruct the user how to use your program.
 
 ## Testing
 
-This section should detail how you tested your code. Simply stating "I ran
-it a few times and it seems to work" is not sufficient. Your testing needs to
-be detailed here.
+In order to ensure no memory leaks occurred, runval.sh was run, which showed 0 errors and 0 leaks.
+Also, mytests was run to check for sorting time. Per project instructions, our n value was 100,000,000 for 
+testing. I ensured that my implementation gained at least 2x performance, when it comes to my threaded version 
+vs the single threaded version orginally gave to us. 
 
 ## Known Bugs
 
@@ -43,13 +44,17 @@ List known bugs that you weren't able to fix (or ran out of time to fix).
 
 ## Reflection and Self Assessment
 
-Discuss the issues you encountered during development and testing. What
-problems did you have? What did you have to research and learn on your
-own? What kinds of errors did you get? How did you fix them?
+I haven't written in C for a long time. I relied heavily on my Google skills to help me understand how to get
+threads to work for this project. My solution is the result of bits and pieces of code here and there, adapting it to
+this design and project specs. 
 
-What parts of the project did you find challenging? Is there anything that
-finally "clicked" for you in the process of working on this project? How well
-did the development and testing process go for you?
+I initially had several errors after running make. Most were due to writing 'for' loops like this: for(int i = 0)...
+I did not know you can't just initialize inside the for loop; you have to declare variable 'i' by itself before the loop.
+I also struggled with the concept of void pointers, which was an idea that I used from my sources below. Pointers in general 
+confuse me, but a void pointer was worse. I had the '*' in the wrong spot a few times, and honestly it was trial and error
+to get it right. Lastly, I thought I could break down the bulk of the main function into seprate functions, such as createThreads, 
+mergeThreads, joinThreads etc. However, I couldn't figure out how to properly pass the arguments in, so I just stuck it all inside
+the main function body. 
 
 ## Sources used
 
@@ -62,6 +67,7 @@ https://www.youtube.com/watch?v=m8zu-eyqN-Q&ab_channel=DIGITALCONTENT-CSE
 https://www.learncpp.com/cpp-tutorial/void-pointers/ 
 https://www.geeksforgeeks.org/void-pointer-c-cpp/
 https://fresh2refresh.com/c-programming/c-passing-struct-to-function/ 
+https://stackoverflow.com/questions/36382444/why-do-we-use-pthread-exit-when-we-can-use-return 
 
 
 
