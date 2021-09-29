@@ -102,20 +102,20 @@ int check_if_sorted(int A[], int n)
 	return TRUE;
 }
 
-void createThreads {
+// void createThreads {
 
 
-}
+// }
 
-void joinThreads {
+// void joinThreads {
 
 
-}
+// }
 
-void mergeProcesses {
+// void mergeProcesses {
 
-	
-}
+
+// }
 
 
 

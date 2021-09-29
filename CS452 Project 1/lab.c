@@ -48,7 +48,7 @@ void serial_mergesort(int A[], int p, int r)
 	}
 }
 
-void parallel_mergersort(void *input) {
+void parallel_mergesort(void *input) {
 
 	struct args *param = (struct args*) userInput;
 
