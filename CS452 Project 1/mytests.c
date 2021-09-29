@@ -148,12 +148,9 @@ int main(int argc, char **argv) {
 
 	int distributeThreads = n % numThreads; // if n is not able to be split evenly when divided by given num of threads
 
+	int i = 0; // had to add this and change all for loops. initial declaration only allowed in c99 or c11 mode
+
 	struct args *params = malloc(numThreads * sizeof(struct args)); // allocating memory for the parameters to be passed to each thread
-
-	for(int i = 0; i < numThreads; i++){ // looping through and adding input size to each thread
-
-		params[i].A = A;
-	}
 
 	int seed = 1;
 	if (argc == 3)
@@ -161,6 +158,11 @@ int main(int argc, char **argv) {
 	
 
 	int *A = (int *) malloc(sizeof(int) * (n+1)); // n+1 since we are using A[1]..A[n]
+
+	for(i = 0; i < numThreads; i++){ // looping through and adding input size to each thread
+
+		params[i].A = A;
+	}
 
 	// generate random input
 
@@ -176,7 +178,7 @@ int main(int argc, char **argv) {
 
 	// serial_mergesort(A,1,n); don't need as switching to a threaded mergesort
 
-	for(int i = 0; i < numThreads; i++){
+	for(i = 0; i < numThreads; i++){
 
 		params[i].p = (makeThreads * i) + 1; //
 
@@ -187,17 +189,17 @@ int main(int argc, char **argv) {
 			params[i].r =params[i].r + distributeThreads; //
 		}
 
-		pthread_create(&givenThreads[i], NULL, parallel_mergersort, &params[i]); //
+		pthread_create(&givenThreads[i], NULL, parallel_mergesort, &params[i]); //
 	}
 
-	for(int i = 0; i < numThreads; i++){
+	for(i = 0; i < numThreads; i++){
 
 		pthread_join(givenThreads[i], NULL);
 	}
 
 	struct args *mergeThreads = &params[0];
 
-	for(int i = 1); i < numThreads,i++){
+	for(i = 1; i < numThreads;i++){
 
 		merge(A, mergeThreads->p, params[i].p -1, params[i].r);
 	}

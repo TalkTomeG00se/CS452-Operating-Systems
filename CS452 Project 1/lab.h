@@ -16,6 +16,10 @@ void merge(int A[], int p, int q, int r);
 void insertion_sort(int A[], int p, int r);
 void* parallel_mergesort(void *input);
 
+struct args {
+    int p,r,*A; 
+};
+
 const int INSERTION_SORT_THRESHOLD = 100; //based on trial and error
 
 #ifdef __cplusplus
