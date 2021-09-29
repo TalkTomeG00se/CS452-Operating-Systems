@@ -102,24 +102,6 @@ int check_if_sorted(int A[], int n)
 	return TRUE;
 }
 
-// void createThreads {
-
-
-// }
-
-// void joinThreads {
-
-
-// }
-
-// void mergeProcesses {
-
-
-// }
-
-
-
-
 int main(int argc, char **argv) {
 
 	if (argc < 3) { // there must be at least one command-line argument. Note: changed to 3 from 2, added argument for threads
@@ -150,7 +132,7 @@ int main(int argc, char **argv) {
 
 	int i = 0; // had to add this and change all for loops. initial declaration only allowed in c99 or c11 mode
 
-	struct args *params = malloc(numThreads * sizeof(struct args)); // allocating memory for the parameters to be passed to each thread
+	struct args *inputs = malloc(numThreads * sizeof(struct args)); // allocating memory for the parameters to be passed to each thread
 
 	int seed = 1;
 	if (argc == 3)
@@ -161,7 +143,7 @@ int main(int argc, char **argv) {
 
 	for(i = 0; i < numThreads; i++){ // looping through and adding input size to each thread
 
-		params[i].A = A;
+		inputs[i].A = A;
 	}
 
 	// generate random input
@@ -178,30 +160,30 @@ int main(int argc, char **argv) {
 
 	// serial_mergesort(A,1,n); don't need as switching to a threaded mergesort
 
-	for(i = 0; i < numThreads; i++){
+	for(i = 0; i < numThreads; i++){ // creating the threads for mergesort
 
-		params[i].p = (makeThreads * i) + 1; //
+		inputs[i].p = (makeThreads * i) + 1; // 
 
-		params[i].r = params[i].p + makeThreads -1; //
+		inputs[i].r = inputs[i].p + makeThreads -1; //
 
-		if(i == numThreads -1){ //
+		if(i == numThreads -1){ // 
 
-			params[i].r =params[i].r + distributeThreads; //
+			inputs[i].r =inputs[i].r + distributeThreads; //
 		}
 
-		pthread_create(&givenThreads[i], NULL, parallel_mergesort, &params[i]); //
+		pthread_create(&givenThreads[i], NULL, parallel_mergesort, &inputs[i]); //
 	}
 
-	for(i = 0; i < numThreads; i++){
+	for(i = 0; i < numThreads; i++){ // joining the threads
 
-		pthread_join(givenThreads[i], NULL);
+		pthread_join(givenThreads[i], NULL); // waiting for threads to end, NULL value is where status usually is, not needed here
 	}
 
-	struct args *mergeThreads = &params[0];
+	struct args *mergeThreads = &inputs[0]; // struct for our threads to merge
 
 	for(i = 1; i < numThreads;i++){
 
-		merge(A, mergeThreads->p, params[i].p -1, params[i].r);
+		merge(A, mergeThreads->p, inputs[i].p -1, inputs[i].r); // merging threads back together
 	}
 
 	sorting_time = getMilliSeconds() - start_time;
@@ -214,8 +196,8 @@ int main(int argc, char **argv) {
 		exit(EXIT_FAILURE);
 	}
 
-	free(params);
-	free(A);
+	free(inputs);
+	free(A); // free the A array
 
 	exit(EXIT_SUCCESS);
 }

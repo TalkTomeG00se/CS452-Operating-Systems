@@ -4,23 +4,27 @@
 * Class: CS452/CS552 [Operating Systems] Section #num
 
 ## Overview
-
-Concisely explain what the program does. If this exceeds a couple of
-sentences, you're going too far. Generally you should be pulling this
-right from the project specification. We don't want you to just cut and
-paste, but paraphrase what is stated in the project specification.
+This project aimed to convert a non-threaded version of mergesort into a threaded version.
+We used the pthread library to change a pre-existing mergesort function to run using multiple
+threads. 
 
 ## Manifest
-
-A listing of source files and other non-generated files and a brief (one line)
-explanation of the purpose of each file.
+Makefile - The makefile for the project
+lab.c - contains the functions for mergesort
+lab.h - header file with function prototypes and defined varibles
+mytests.c - driver code to run mergesort. Functions as driver and testing file
+README - this file describing the project
+runval.sh - memory leak testing script
 
 ## Building the project
-
-This section should tell the user how to build your code.  If you are
-delivering a library, where does it need to be installed or how do you use
-it? Is this an executable, if so how can a user get up to speed as fast
-as possible.
+Using the makefile, running this program is easy.
+1. run 'make'
+2. This will generate a runable 'mytests'
+3. Usage for 'mytests' is $ mytests <input size> <number of threads> <seed>
+    - Input size is number of items to sort
+    - Number of threads: Default is 1, max is 10
+    - Seed - seed value. Default 1, or will match thread value
+4. To clean up all files, run: make clean
 
 ## Features and usage
 

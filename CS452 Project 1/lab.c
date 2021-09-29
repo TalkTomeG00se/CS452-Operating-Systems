@@ -50,11 +50,13 @@ void serial_mergesort(int A[], int p, int r)
 
 void* parallel_mergesort(void *userInput) {
 
-	struct args *param = (struct args*) userInput;
+	struct args *param = (struct args*) userInput; // creating a struct for user inputs
 
-	serial_mergesort(param->A, param->p, param->r);
+	serial_mergesort(param->A, param->p, param->r); // calling mergesort on the inputs, will merge each one later
 
-	pthread_exit(NULL);
+	pthread_exit(NULL); // Note: Didn't have this at first, got warning that a resource wasn't closed.
+
+	// source: https://stackoverflow.com/questions/36382444/why-do-we-use-pthread-exit-when-we-can-use-return
 
 	
 }
