@@ -20,16 +20,17 @@ runval.sh - memory leak testing script
 Using the makefile, running this program is easy.
 1. run 'make'
 2. This will generate a runable 'mytests'
-3. Usage for 'mytests' is $ mytests <input size> <number of threads> <seed>
-    - Input size is number of items to sort
-    - Number of threads: Default is 1, max is 10
-    - Seed - seed value. Default 1, or will match thread value
-4. To clean up all files, run: make clean
+3. To clean up all files, run: make clean
 
 ## Features and usage
 
-Summarize the main features of your program. It is also appropriate to
-instruct the user how to use your program.
+This program performs mergestort on a given number of items, and now supports user given number of threads.
+Default number of threads is 1, and max threads allowed is 10. 
+
+Usage for 'mytests' is $ mytests <input size> <number of threads> <seed>
+    - Input size is number of items to sort
+    - Number of threads: Default is 1, max is 10
+    - Seed - seed value. Default 1, or will match thread value
 
 ## Testing
 
@@ -38,15 +39,25 @@ Also, mytests was run to check for sorting time. Per project instructions, our n
 testing. I ensured that my implementation gained at least 2x performance, when it comes to my threaded version 
 vs the single threaded version orginally gave to us. 
 
+Example Results:
+[coltendavis@onyx CS452 Project 1]$ mytests 100000000 4
+Sorting 100000000 elements took 10.98 seconds.
+[coltendavis@onyx CS452 Project 1]$ mytests 100000000 1
+Sorting 100000000 elements took 33.45 seconds.
+
 ## Known Bugs
 
-List known bugs that you weren't able to fix (or ran out of time to fix).
+Currently the only known "issue" is that mytests.c only shows a singular result. I wasn't able to make the timing results for 
+both serial and parallel show at the same time; I'm not sure if this was a requirement for grading, but it was briefly mentioned 
+in the project description. It does however work if the thread is 1, which is just serial, anything more than that is parallel.
 
 ## Reflection and Self Assessment
 
 I haven't written in C for a long time. I relied heavily on my Google skills to help me understand how to get
 threads to work for this project. My solution is the result of bits and pieces of code here and there, adapting it to
-this design and project specs. 
+this design and project specs. Using stucts to pass arguments into the new parallel_mergesort function came from a post from
+a stackoverflow question, source is below. Once I knew that was the path I wanted to take, it was just figuring out how to 
+accomplish that, with of course, more research and testing.
 
 I initially had several errors after running make. Most were due to writing 'for' loops like this: for(int i = 0)...
 I did not know you can't just initialize inside the for loop; you have to declare variable 'i' by itself before the loop.
@@ -63,11 +74,13 @@ https://www.geeksforgeeks.org/merge-sort-using-multi-threading/
 https://stackoverflow.com/questions/48889007/multithreaded-merge-sort-programming
 https://stackoverflow.com/questions/25750066/c-11-multithread-merge-sort
 https://www.geeksforgeeks.org/multithreading-c-2/
+https://www.programiz.com/c-programming/c-structure-function
 https://www.youtube.com/watch?v=m8zu-eyqN-Q&ab_channel=DIGITALCONTENT-CSE
 https://www.learncpp.com/cpp-tutorial/void-pointers/ 
 https://www.geeksforgeeks.org/void-pointer-c-cpp/
 https://fresh2refresh.com/c-programming/c-passing-struct-to-function/ 
-https://stackoverflow.com/questions/36382444/why-do-we-use-pthread-exit-when-we-can-use-return 
+https://stackoverflow.com/questions/36382444/why-do-we-use-pthread-exit-when-we-can-use-return
+https://stackoverflow.com/questions/10370047/passing-struct-to-function
 
 
 
