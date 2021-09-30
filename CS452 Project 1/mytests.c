@@ -162,16 +162,16 @@ int main(int argc, char **argv) {
 
 	for(i = 0; i < numThreads; i++){ // creating the threads for mergesort
 
-		inputs[i].p = (makeThreads * i) + 1; // 
+		inputs[i].p = (makeThreads * i) + 1; // assinging values to p, beginning of array A
 
-		inputs[i].r = inputs[i].p + makeThreads -1; //
+		inputs[i].r = inputs[i].p + makeThreads -1; // assingnig values to r, end of portion to be sorted in array A[p...r]
 
-		if(i == numThreads -1){ // 
+		if(i == numThreads -1){ // if we're near max threads
 
-			inputs[i].r =inputs[i].r + distributeThreads; //
+			inputs[i].r =inputs[i].r + distributeThreads; // use remainder found above to ensure array end is included
 		}
 
-		pthread_create(&givenThreads[i], NULL, parallel_mergesort, &inputs[i]); //
+		pthread_create(&givenThreads[i], NULL, parallel_mergesort, &inputs[i]); // creating threads
 	}
 
 	for(i = 0; i < numThreads; i++){ // joining the threads

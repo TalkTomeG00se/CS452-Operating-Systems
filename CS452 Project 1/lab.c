@@ -52,7 +52,7 @@ void* parallel_mergesort(void *userInput) {
 
 	struct args *param = (struct args*) userInput; // creating a struct for user inputs
 
-	serial_mergesort(param->A, param->p, param->r); // calling mergesort on the inputs, will merge each one later
+	serial_mergesort(param->A, param->p, param->r); // calling mergesort on the inputs
 
 	pthread_exit(NULL); // Note: Didn't have this at first, got warning that a resource wasn't closed.
 
