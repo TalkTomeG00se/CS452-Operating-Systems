@@ -141,11 +141,6 @@ void tsb_addAtFront(struct tsb_list * list, NodePtr node) {
 
     pthread_mutex_lock(&(list->mutex)); // lock
 
-    struct node* temp = createNode(node); // creates a new node, using the createNode function
-
-    addAtFront(list->list, temp); // adds at front using existing function
-
-    pthread_cond_broadcast(&(list->listNotEmpty)); // broadcasting that the list is not empty now, ensuring consumers are going
 
     pthread_mutex_unlock(&(list->mutex)); // unlocking
 
@@ -164,11 +159,7 @@ void tsb_addAtRear(struct tsb_list * list, NodePtr node) {
 
     pthread_mutex_lock(&(list->mutex)); // lock
 
-    struct node* temp = createNode(node); // creates a new node, using the createNode function
 
-    addAtRear(list->list, temp); // adds at rear using existing function
-
-    pthread_cond_broadcast(&(list->listNotEmpty)); // broadcasting that the list is not empty now, ensuring consumers are going
 
     pthread_mutex_unlock(&(list->mutex)); // unlocking
 
@@ -184,7 +175,10 @@ void tsb_addAtRear(struct tsb_list * list, NodePtr node) {
  */
 NodePtr tsb_removeFront(struct tsb_list * list) {
 
-   
+    pthread_mutex_lock(&(list->mutex)); // initial lock
+
+
+    pthread_mutex_unlock(&(list->mutex)); // unlocking
 
 }
 
@@ -198,6 +192,10 @@ NodePtr tsb_removeFront(struct tsb_list * list) {
  */
 NodePtr tsb_removeRear(struct tsb_list * list) {
 
+    pthread_mutex_lock(&(list->mutex)); // initial lock
+
+
+    pthread_mutex_unlock(&(list->mutex)); // unlocking
 
 }
 
@@ -211,6 +209,11 @@ NodePtr tsb_removeRear(struct tsb_list * list) {
  * @return a pointer to the node that was removed.
  */
 NodePtr tsb_removeNode(struct tsb_list * list, NodePtr node) {
+
+    pthread_mutex_lock(&(list->mutex)); // initial lock
+
+
+    pthread_mutex_unlock(&(list->mutex)); // unlocking
 
 
 }
@@ -230,9 +233,9 @@ NodePtr tsb_search(struct tsb_list * list, const void *obj) {
 
     NodePtr search = search(list -> list, obj); // Using NodePtr struct defined in Node.h. Running search, pointer list to variable name list
 
-    pthread_mutex_unlock(&(list -> mutex)); // unlocking
-
     return search; // returns the pointer for node
+
+    pthread_mutex_unlock(&(list -> mutex)); // unlocking
 
 }
 
