@@ -1,0 +1,70 @@
+## Project 1 - Mergesort
+
+* Author: Colten Davis
+* Class: CS452/CS552 [Operating Systems] Section 001
+
+## Overview
+This project aimed to convert a non-threaded version of mergesort into a threaded version.
+We used the pthread library to change a pre-existing mergesort function to run using multiple
+threads. 
+
+## Manifest
+Makefile - The makefile for the project
+lab.c - contains the functions for mergesort
+lab.h - header file with function prototypes and defined varibles
+mytests.c - driver code to run mergesort. Functions as driver and testing file
+README - this file describing the project
+runval.sh - memory leak testing script
+
+## Building the project
+Using the makefile, running this program is easy.
+1. run 'make'
+2. This will generate a runable 'mytests'
+3. To clean up all files, run: make clean
+
+## Features and usage
+
+This program performs mergestort on a given number of items, and now supports user given number of threads.
+Default number of threads is 1, and max threads allowed is 10. 
+
+Usage for 'mytests' is $ mytests <input size> <number of threads> <seed>
+    - Input size is number of items to sort
+    - Number of threads: Default is 1, max is 10
+    - Seed - seed value. Default 1, or will match thread value
+
+## Testing
+
+In order to ensure no memory leaks occurred, runval.sh was run, which showed 0 errors and 0 leaks.
+Also, mytests was run to check for sorting time. Per project instructions, our n value was 100,000,000 for 
+testing. I ensured that my implementation gained at least 2x performance, when it comes to my threaded version 
+vs the single threaded version orginally gave to us. 
+
+Example Results:
+[coltendavis@onyx CS452 Project 1]$ mytests 100000000 4
+Sorting 100000000 elements took 10.98 seconds.
+[coltendavis@onyx CS452 Project 1]$ mytests 100000000 1
+Sorting 100000000 elements took 33.45 seconds.
+
+## Known Bugs
+
+Currently the only known "issue" is that mytests.c only shows a singular result. I wasn't able to make the timing results for 
+both serial and parallel show at the same time; I'm not sure if this was a requirement for grading, but it was briefly mentioned 
+in the project description. It does however work if the thread is 1, which is just serial, anything more than that is parallel.
+
+## Reflection and Self Assessment
+
+I haven't written in C for a long time. I relied heavily on my Google skills to help me understand how to get
+threads to work for this project. My solution is the result of bits and pieces of code here and there, adapting it to
+this design and project specs. Using stucts to pass arguments into the new parallel_mergesort function came from a post from
+a stackoverflow question, source is below. Once I knew that was the path I wanted to take, it was just figuring out how to 
+accomplish that, with of course, more research and testing.
+
+I initially had several errors after running make. Most were due to writing 'for' loops like this: for(int i = 0)...
+I did not know you can't just initialize inside the for loop; you have to declare variable 'i' by itself before the loop.
+I also struggled with the concept of void pointers, which was an idea that I used from my sources below. Pointers in general 
+confuse me, but a void pointer was worse. I had the '*' in the wrong spot a few times, and honestly it was trial and error
+to get it right. Lastly, I thought I could break down the bulk of the main function into seprate functions, such as createThreads, 
+mergeThreads, joinThreads etc. However, I couldn't figure out how to properly pass the arguments in, so I just stuck it all inside
+the main function body. 
+
+## Sources used
