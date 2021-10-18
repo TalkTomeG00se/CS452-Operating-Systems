@@ -23,7 +23,17 @@ struct tsb_list {
  */
 struct tsb_list * tsb_createList(int (*equals)(const void *, const void *),  char * (*toString)(const void *), void (*freeObject)(void *), int capacity) {
 
+    struct tsb_list *tsbList = (struct tsb_list*) malloc(sizeof(struct tsb_list*) + capacity * sizeof(struct node));
 
+    tsbList->list = createList(equals, toString, freeObject);
+    tsbList->capacity = capacity;
+    tsbList->stop_requested = 0;
+
+    pthread_mutex_init(&(tsbList -> mutex), NULL);
+    pthread_cond_init(&(tsbList -> listNotFull), NULL);
+    pthread_cond_init(&(tsbList -> listNotEmpty), NULL);
+
+    return tsbList;
 
 }
 
@@ -52,13 +62,10 @@ void tsb_freeList(struct tsb_list * list) {
  */
 int tsb_getSize(struct tsb_list * list) {
 
-    pthread_mutex_lock(&(list->mutex)); // lock
-
     int size = getSize(list->list); // pointer list to variable name list
 
     return size;
-
-    pthread_mutex_unlock(&(list->mutex)); // unlocking
+    
 }
 
 /**
@@ -69,11 +76,8 @@ int tsb_getSize(struct tsb_list * list) {
  */
 int tsb_getCapacity(struct tsb_list * list) {
 
-    pthread_mutex_lock(&(list->mutex)); // lock
-
     return list -> capacity; // pointer list to variable name capacity
 
-    pthread_mutex_unlock(&(list->mutex)); // unlocking
 }
 
 /**
@@ -101,13 +105,10 @@ void tsb_setCapacity(struct tsb_list * list, int capacity) {
  */
 Boolean tsb_isEmpty(struct tsb_list * list) {
 
-    pthread_mutex_lock(&(list->mutex)); // lock
-
     int size = tsb_getSize(list); // get size of list
 
     return size == 0; // using relational operator, returns yes if true, else no
-
-    pthread_mutex_unlock(&(list->mutex)); // unlocking
+    
 }
 
 /**
@@ -118,13 +119,9 @@ Boolean tsb_isEmpty(struct tsb_list * list) {
  */
 Boolean tsb_isFull(struct tsb_list * list) {
 
-    pthread_mutex_lock(&(list->mutex)); // initial lock
-
     int size = tsb_getSize(list); // get size of list
 
     return size >= tsb_getCapacity(list); // relational operator, comparing size to current capacity. True if full, else no
-
-    pthread_mutex_unlock(&(list->mutex)); // unlocking
 
 }
 
@@ -141,8 +138,17 @@ void tsb_addAtFront(struct tsb_list * list, NodePtr node) {
 
     pthread_mutex_lock(&(list->mutex)); // lock
 
+    while(tsb_isFull(list) && list->stop_requested == 0){ // while list is full and stop has not been requested
+
+        pthread_cond_wait(&(list->listNotFull), &(list->mutex)); // waits until there is a item for the consumer to remove
+
+    }
+
+    addAtFront(list->list, node); // adds node to front with existing function
 
     pthread_mutex_unlock(&(list->mutex)); // unlocking
+
+    pthread_cond_signal(&(list->listNotEmpty)); // unblocks the thread put in place by the cond_wait
 
 }
 
@@ -159,9 +165,18 @@ void tsb_addAtRear(struct tsb_list * list, NodePtr node) {
 
     pthread_mutex_lock(&(list->mutex)); // lock
 
+    while(tsb_isFull(list) && list->stop_requested == 0){ // while list is full and stop has not been requested
 
+        pthread_cond_wait(&(list->listNotFull), &(list->mutex)); // waits until there is a item for the consumer to remove
+
+    }
+
+    addAtRear(list->list, node); // adds node to front with existing function
 
     pthread_mutex_unlock(&(list->mutex)); // unlocking
+
+    pthread_cond_signal(&(list->listNotEmpty)); // unblocks the thread put in place by the cond_wait
+
 
 }
 
@@ -177,8 +192,24 @@ NodePtr tsb_removeFront(struct tsb_list * list) {
 
     pthread_mutex_lock(&(list->mutex)); // initial lock
 
+    while(tsb_isEmpty(list) && list->stop_requested == 0){ // while list is full and stop has not been requested
+
+        pthread_cond_wait(&(list->listNotEmpty), &(list->mutex));
+
+    }
+
+    NodePtr temp = NULL; // initialize a temp node to null
+
+    if(list->stop_requested == 0){ // if stop has not been requested
+
+        temp = removeFront(list->list); // set temp to the removed node from the front, per existing function
+    }
 
     pthread_mutex_unlock(&(list->mutex)); // unlocking
+
+    pthread_cond_signal(&(list->listNotFull)); // unblocks the thread put in place by the cond_wait
+
+    return temp;
 
 }
 
@@ -194,8 +225,24 @@ NodePtr tsb_removeRear(struct tsb_list * list) {
 
     pthread_mutex_lock(&(list->mutex)); // initial lock
 
+    while(tsb_isEmpty(list) && list->stop_requested == 0){ // while list is full and stop has not been requested
+
+        pthread_cond_wait(&(list->listNotEmpty), &(list->mutex));
+
+    }
+
+    NodePtr temp = NULL; // initialize a temp node to null
+
+    if(list->stop_requested == 0){ // if stop has not been requested
+
+        temp = removeRear(list->list); // set temp to the removed node from the front, per existing function
+    }
 
     pthread_mutex_unlock(&(list->mutex)); // unlocking
+
+    pthread_cond_signal(&(list->listNotFull)); // unblocks the thread put in place by the cond_wait
+
+    return temp;
 
 }
 
@@ -213,7 +260,24 @@ NodePtr tsb_removeNode(struct tsb_list * list, NodePtr node) {
     pthread_mutex_lock(&(list->mutex)); // initial lock
 
 
+    while(tsb_isEmpty(list) && list->stop_requested == 0){ // while list is full and stop has not been requested
+
+        pthread_cond_wait(&(list->listNotEmpty), &(list->mutex));
+
+    }
+
+    NodePtr temp = NULL; // initialize a temp node to null
+
+    if(list->stop_requested == 0){ // if stop has not been requested
+
+        temp = removeNode(list->list); // set temp to the removed node from the front, per existing function
+    }
+
+    // pthread_cond_signal(&(list->listNotFull)); // unblocks the thread put in place by the cond_wait
+
     pthread_mutex_unlock(&(list->mutex)); // unlocking
+
+    return temp;
 
 
 }
@@ -231,11 +295,11 @@ NodePtr tsb_search(struct tsb_list * list, const void *obj) {
 
     pthread_mutex_lock(&(list -> mutex)); // initial lock
 
-    NodePtr search = search(list -> list, obj); // Using NodePtr struct defined in Node.h. Running search, pointer list to variable name list
-
-    return search; // returns the pointer for node
+    NodePtr temp = search(list -> list, obj); // Using NodePtr struct defined in Node.h. Running search, pointer list to variable name list
 
     pthread_mutex_unlock(&(list -> mutex)); // unlocking
+
+    return temp; // returns the pointer for node
 
 }
 
