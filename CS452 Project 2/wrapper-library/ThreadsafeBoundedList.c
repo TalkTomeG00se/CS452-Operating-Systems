@@ -338,11 +338,13 @@ void tsb_printList(struct tsb_list * list) {
  */
 void tsb_finishUp(struct tsb_list * list) {
 
-    pthread_mutex_lock(&(list->mutex)); // initial lock
+   while(tsb_isEmpty(list) == 0){} // while list is not empty
 
-    list->stop_requested = 1; // setting value to 1, requesting stop
+   list->stop_requested = 1; // request the stop
 
-    pthread_cond_broadcast(&(list->listNotEmpty)); // broadcasting that the list is not empty, ensures all consumers are going
+   pthread_cond_broadcast(&(list->listNotEmpty)); // awaken all consumers
 
-    pthread_mutex_unlock(&(list->mutex)); // unlocking
+   pthread_cond_broadcast(&(list -> listNotFull)); // awaken all producers
+
+
 }
