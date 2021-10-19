@@ -23,15 +23,19 @@ struct tsb_list {
  */
 struct tsb_list * tsb_createList(int (*equals)(const void *, const void *),  char * (*toString)(const void *), void (*freeObject)(void *), int capacity) {
 
-    struct tsb_list *tsbList = (struct tsb_list*) malloc(sizeof(struct tsb_list*) + capacity * sizeof(struct node));
+    struct tsb_list *tsbList = (struct tsb_list*) malloc(sizeof(struct tsb_list*) + capacity * sizeof(struct node)); // allocate the memory
 
-    tsbList->list = createList(equals, toString, freeObject);
-    tsbList->capacity = capacity;
-    tsbList->stop_requested = 0;
+    tsbList->list = createList(equals, toString, freeObject); // create the list
 
-    pthread_mutex_init(&(tsbList -> mutex), NULL);
-    pthread_cond_init(&(tsbList -> listNotFull), NULL);
-    pthread_cond_init(&(tsbList -> listNotEmpty), NULL);
+    tsbList->capacity = capacity; // set capacity
+
+    tsbList->stop_requested = 0; // set stop requested to false
+
+    pthread_mutex_init(&(tsbList -> mutex), NULL); // initialize the mutex with a null attribute
+
+    pthread_cond_init(&(tsbList -> listNotFull), NULL); // initialize the listNotFull cond with a NULL attribute
+
+    pthread_cond_init(&(tsbList -> listNotEmpty), NULL); // initialize the listNotEmpty cond with a NULL attribute
 
     return tsbList;
 
@@ -46,11 +50,11 @@ struct tsb_list * tsb_createList(int (*equals)(const void *, const void *),  cha
  */
 void tsb_freeList(struct tsb_list * list) {
 
-    pthread_mutex_lock(&(list->mutex)); // initial lock, pointer list to variable name mutex
+    pthread_mutex_lock(&(list->mutex)); // lock
 
-    freeList(list->list); // pointer list, variable name list
+    freeList(list->list); // pointer list, variable name list, using freeList function
 
-    pthread_mutex_unlock(&(list->mutex)); // unlocking, pointer list to variable name mutex
+    pthread_mutex_unlock(&(list->mutex)); // unlocking
 
 }
 
@@ -87,11 +91,11 @@ int tsb_getCapacity(struct tsb_list * list) {
  */
 void tsb_setCapacity(struct tsb_list * list, int capacity) {
 
-    pthread_mutex_lock(&(list->mutex)); // initial lock, pointer list to variable name mutex
+    pthread_mutex_lock(&(list->mutex)); // lock
 
     list->capacity = capacity; // pointer list to capacity variable, set capacity
 
-    pthread_mutex_unlock(&(list->mutex)); // unlocking, pointer list to variable name mutex
+    pthread_mutex_unlock(&(list->mutex)); // unlock
 
 }
 
@@ -103,7 +107,7 @@ void tsb_setCapacity(struct tsb_list * list, int capacity) {
  */
 Boolean tsb_isEmpty(struct tsb_list * list) {
 
-    return tsb_getSize(list) == 0;
+    return tsb_getSize(list) == 0; // using relational operator to deterimine if list is empty. True if empty, else no
     
 }
 
@@ -161,16 +165,15 @@ void tsb_addAtRear(struct tsb_list * list, NodePtr node) {
 
     while(tsb_isFull(list) && list->stop_requested == 0){ // while list is full and stop has not been requested
 
-        pthread_cond_wait(&(list->listNotFull), &(list->mutex)); // waits until there is a item for the consumer to remove
+        pthread_cond_wait(&(list->listNotFull), &(list->mutex)); // set wait condition, wait until list is not full
 
     }
 
-    addAtRear(list->list, node); // adds node to front with existing function
+    addAtRear(list->list, node); // adds node to rear with existing function
 
     pthread_mutex_unlock(&(list->mutex)); // unlocking
 
     pthread_cond_signal(&(list->listNotEmpty)); // unblocks the thread put in place by the cond_wait
-
 
 }
 
@@ -184,11 +187,11 @@ void tsb_addAtRear(struct tsb_list * list, NodePtr node) {
  */
 NodePtr tsb_removeFront(struct tsb_list * list) {
 
-    pthread_mutex_lock(&(list->mutex)); // initial lock
-
+    pthread_mutex_lock(&(list->mutex)); // lock
+    
     while(tsb_isEmpty(list) && list->stop_requested == 0){ // while list is full and stop has not been requested
 
-        pthread_cond_wait(&(list->listNotEmpty), &(list->mutex));
+        pthread_cond_wait(&(list->listNotEmpty), &(list->mutex)); // set wait condition
 
     }
 
@@ -202,6 +205,8 @@ NodePtr tsb_removeFront(struct tsb_list * list) {
     pthread_mutex_unlock(&(list->mutex)); // unlocking
 
     pthread_cond_signal(&(list->listNotFull)); // unblocks the thread put in place by the cond_wait
+
+    // Note: unsure why unlock cannotbe after the signal, or after the return.
 
     return temp;
 
@@ -217,11 +222,11 @@ NodePtr tsb_removeFront(struct tsb_list * list) {
  */
 NodePtr tsb_removeRear(struct tsb_list * list) {
 
-    pthread_mutex_lock(&(list->mutex)); // initial lock
+    pthread_mutex_lock(&(list->mutex)); // lock
 
     while(tsb_isEmpty(list) && list->stop_requested == 0){ // while list is full and stop has not been requested
 
-        pthread_cond_wait(&(list->listNotEmpty), &(list->mutex));
+        pthread_cond_wait(&(list->listNotEmpty), &(list->mutex)); // set wait condition
 
     }
 
@@ -255,7 +260,7 @@ NodePtr tsb_removeNode(struct tsb_list * list, NodePtr node) {
 
     while(tsb_isEmpty(list) && list->stop_requested == 0){ // while list is full and stop has not been requested
 
-        pthread_cond_wait(&(list->listNotEmpty), &(list->mutex));
+        pthread_cond_wait(&(list->listNotEmpty), &(list->mutex)); // set wait condition
 
     }
 
@@ -270,7 +275,6 @@ NodePtr tsb_removeNode(struct tsb_list * list, NodePtr node) {
 
     return temp;
 
-
 }
 
 /**
@@ -284,7 +288,7 @@ NodePtr tsb_removeNode(struct tsb_list * list, NodePtr node) {
  */
 NodePtr tsb_search(struct tsb_list * list, const void *obj) {
 
-    pthread_mutex_lock(&(list -> mutex)); // initial lock
+    pthread_mutex_lock(&(list -> mutex)); // lock
 
     NodePtr temp = search(list -> list, obj); // Using NodePtr struct defined in Node.h. Running search, pointer list to variable name list
 
@@ -301,7 +305,7 @@ NodePtr tsb_search(struct tsb_list * list, const void *obj) {
  */
 void tsb_reverseList(struct tsb_list *  list) {
 
-    pthread_mutex_lock(&(list -> mutex)); // initial lock
+    pthread_mutex_lock(&(list -> mutex)); // lock
 
     reverseList(list -> list); // reverses the list, using existing function
 
@@ -316,7 +320,7 @@ void tsb_reverseList(struct tsb_list *  list) {
  */
 void tsb_printList(struct tsb_list * list) {
 
-    pthread_mutex_lock(&(list -> mutex)); // initial lock
+    pthread_mutex_lock(&(list -> mutex)); // lock
 
     printList(list -> list); // prints the list, using existing function
 

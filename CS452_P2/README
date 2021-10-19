@@ -4,67 +4,86 @@
 * Class: CS452/CS552 [Operating Systems] Section 001
 
 ## Overview
-This project aimed to convert a non-threaded version of mergesort into a threaded version.
-We used the pthread library to change a pre-existing mergesort function to run using multiple
-threads. 
+This project aimed to take a existing list library, and change it so that is it "thread-safe". The aim is to 
+eliminate any race conditions, and ensure that any calculations are repeatable, showing that no race conditions occurred.
 
 ## Manifest
-Makefile - The makefile for the project
-lab.c - contains the functions for mergesort
-lab.h - header file with function prototypes and defined varibles
-mytests.c - driver code to run mergesort. Functions as driver and testing file
-README - this file describing the project
-runval.sh - memory leak testing script
+include - Directory
+lib - Directory
+list
+    - include 
+        - List.h - List header file
+        - Node.h - Node header file
+    - lib
+        - libmylib.a - static library
+        - libmylib.so - dynamic library
+    - Makefile
+    - SimpleTestList.c
+wrapper-library
+    - Makefile - makefile within the library
+    - ThreadsafeBoundedList.c - c file for threadsafe list
+    - ThreadsafeBoundedList.h - header file for threadsafe list
+item.c - Item class
+item.h - Item header file
+Makefile - The makefile for this project
+README - This README
+pc.c - Helps simulate consumers and producers
+test-pc-mq.sh - test script for the multi-queue
+test-pc.sh - test script
+
 
 ## Building the project
-Using the makefile, running this program is easy.
-1. run 'make'
-2. This will generate a runable 'mytests'
-3. To clean up all files, run: make clean
+1. First we must export both paths, ensuring they are related to the executable
+2. Run the following: export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./list/lib:./lib
+3. Run "make" to compile via GCC
+4. Note: Run "make clean" to clean up everything
 
 ## Features and usage
 
-This program performs mergestort on a given number of items, and now supports user given number of threads.
-Default number of threads is 1, and max threads allowed is 10. 
+This program wraps an existing library, with locks to ensure that no race conditions occurr. 
+It does this by implementing pthread locks around any actions that change the list.
 
-Usage for 'mytests' is $ mytests <input size> <number of threads> <seed>
-    - Input size is number of items to sort
-    - Number of threads: Default is 1, max is 10
-    - Seed - seed value. Default 1, or will match thread value
+In order to test the program, run the following after building the project ( see above )
+- The test script test-pc.sh can now be run via "./test-pc.sh"
+
+This will simulate producers and consumers, ensuring that the amount produced and consumed is the same.
 
 ## Testing
-
-In order to ensure no memory leaks occurred, runval.sh was run, which showed 0 errors and 0 leaks.
-Also, mytests was run to check for sorting time. Per project instructions, our n value was 100,000,000 for 
-testing. I ensured that my implementation gained at least 2x performance, when it comes to my threaded version 
-vs the single threaded version orginally gave to us. 
-
-Example Results:
-[coltendavis@onyx CS452 Project 1]$ mytests 100000000 4
-Sorting 100000000 elements took 10.98 seconds.
-[coltendavis@onyx CS452 Project 1]$ mytests 100000000 1
-Sorting 100000000 elements took 33.45 seconds.
+I ran the test-pc.sh script to ensure that the consumers and producers matched, and they did. 
+I also changed the values of the threads and items, ensuring that calculations remained the same.
 
 ## Known Bugs
-
-Currently the only known "issue" is that mytests.c only shows a singular result. I wasn't able to make the timing results for 
-both serial and parallel show at the same time; I'm not sure if this was a requirement for grading, but it was briefly mentioned 
-in the project description. It does however work if the thread is 1, which is just serial, anything more than that is parallel.
+No known bugs currently exist that I am aware of. 
 
 ## Reflection and Self Assessment
+I understood that all the functions in the ThreadsafeBoundList header file needed to be implemented, similar  
+to an interface is implemented in Java. The "get" and "set" functions were easy enough, but I ran into quite
+a few issues with the addding/removing functions, and the most difficult time with the tsb_createList function.
+Similar to Project 1, the constructor was more luck and my Google skills. The source from cs.kent.edu was a large
+help on how to structure everything. 
 
-I haven't written in C for a long time. I relied heavily on my Google skills to help me understand how to get
-threads to work for this project. My solution is the result of bits and pieces of code here and there, adapting it to
-this design and project specs. Using stucts to pass arguments into the new parallel_mergesort function came from a post from
-a stackoverflow question, source is below. Once I knew that was the path I wanted to take, it was just figuring out how to 
-accomplish that, with of course, more research and testing.
+I ran into several issues in development. I had my "unlock" function at the very end of every function, after a signal 
+and after the return statement. This caused the test script to hang infintely, I had to kill it. My sources show that
+a signal can come before a unlock, but for some reason this program would not allow it. Nor do I understand why I 
+can't have the unlock after a the return statement. I had to change every function to accomodate this new information.
+What was nice, is that once a remove or add function was made, I just copied it and made the other function, only changing
+the built in function, such as making the removeFront function, then only changing one function to make the removeRear function.
 
-I initially had several errors after running make. Most were due to writing 'for' loops like this: for(int i = 0)...
-I did not know you can't just initialize inside the for loop; you have to declare variable 'i' by itself before the loop.
-I also struggled with the concept of void pointers, which was an idea that I used from my sources below. Pointers in general 
-confuse me, but a void pointer was worse. I had the '*' in the wrong spot a few times, and honestly it was trial and error
-to get it right. Lastly, I thought I could break down the bulk of the main function into seprate functions, such as createThreads, 
-mergeThreads, joinThreads etc. However, I couldn't figure out how to properly pass the arguments in, so I just stuck it all inside
-the main function body. 
+
+
 
 ## Sources used
+Pthread Man Pages
+https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_mutex_init.html
+https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_cond_init.html
+https://pubs.opengroup.org/onlinepubs/007904975/functions/pthread_cond_broadcast.html
+https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_cond_wait.html
+https://pubs.opengroup.org/onlinepubs/7908799/xsh/pthread_cond_signal.html
+
+Other Sources
+https://www.geeksforgeeks.org/condition-wait-signal-multi-threading/
+https://www.ibm.com/docs/en/i/7.4?topic=ssw_ibm_i_74/apis/users_76.htm
+https://docs.oracle.com/cd/E19455-01/806-5257/6je9h032r/index.html
+https://gist.github.com/rtv/4989304
+http://www.cs.kent.edu/~ruttan/sysprog/lectures/multi-thread/multi-thread.html
+
