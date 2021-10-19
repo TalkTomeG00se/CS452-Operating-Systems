@@ -69,7 +69,9 @@ can't have the unlock after a the return statement. I had to change every functi
 What was nice, is that once a remove or add function was made, I just copied it and made the other function, only changing
 the built in function, such as making the removeFront function, then only changing one function to make the removeRear function.
 
-
+I'm still not familiar with C as a language, so I have to rely heavily on man pages, Stack Overflow, anything Google can show me.
+I struggled with most, as I said, with the tsb_createList. A few Stack Overflow posts help get me on the right direction, 
+along with our class notes. 
 
 
 ## Sources used
@@ -86,4 +88,8 @@ https://www.ibm.com/docs/en/i/7.4?topic=ssw_ibm_i_74/apis/users_76.htm
 https://docs.oracle.com/cd/E19455-01/806-5257/6je9h032r/index.html
 https://gist.github.com/rtv/4989304
 http://www.cs.kent.edu/~ruttan/sysprog/lectures/multi-thread/multi-thread.html
+https://stackoverflow.com/questions/4989451/mutex-example-tutorial
+https://www.delftstack.com/howto/c/c-malloc-struct/
+https://stackoverflow.com/questions/14768230/malloc-for-struct-and-pointer-in-c
+
 

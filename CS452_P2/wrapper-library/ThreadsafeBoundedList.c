@@ -23,6 +23,7 @@ struct tsb_list {
  */
 struct tsb_list * tsb_createList(int (*equals)(const void *, const void *),  char * (*toString)(const void *), void (*freeObject)(void *), int capacity) {
 
+    // Influenced by stack overflow sources, see README
     struct tsb_list *tsbList = (struct tsb_list*) malloc(sizeof(struct tsb_list*) + capacity * sizeof(struct node)); // allocate the memory
 
     tsbList->list = createList(equals, toString, freeObject); // create the list
@@ -30,6 +31,8 @@ struct tsb_list * tsb_createList(int (*equals)(const void *, const void *),  cha
     tsbList->capacity = capacity; // set capacity
 
     tsbList->stop_requested = 0; // set stop requested to false
+
+    // NULL parameter means default attributes are used. Source https://stackoverflow.com/questions/14403101/default-attributes-pthread-create-posix-c-linux
 
     pthread_mutex_init(&(tsbList -> mutex), NULL); // initialize the mutex with a null attribute
 
@@ -188,7 +191,7 @@ void tsb_addAtRear(struct tsb_list * list, NodePtr node) {
 NodePtr tsb_removeFront(struct tsb_list * list) {
 
     pthread_mutex_lock(&(list->mutex)); // lock
-    
+
     while(tsb_isEmpty(list) && list->stop_requested == 0){ // while list is full and stop has not been requested
 
         pthread_cond_wait(&(list->listNotEmpty), &(list->mutex)); // set wait condition
@@ -206,7 +209,7 @@ NodePtr tsb_removeFront(struct tsb_list * list) {
 
     pthread_cond_signal(&(list->listNotFull)); // unblocks the thread put in place by the cond_wait
 
-    // Note: unsure why unlock cannotbe after the signal, or after the return.
+    // Note: unsure why unlock cannotbe after the signal, or after the return. Caused program to hang.
 
     return temp;
 
