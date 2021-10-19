@@ -37,6 +37,7 @@ test-pc.sh - test script
 2. Run the following: export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./list/lib:./lib
 3. Run "make" to compile via GCC
 4. Note: Run "make clean" to clean up everything
+5. If you want to run the test-pc.sh, you might have run chmod u+x test-pc.sh to make it exectuable as well.
 
 ## Features and usage
 
