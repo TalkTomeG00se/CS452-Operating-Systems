@@ -39,6 +39,7 @@ static int booga_proc_open(struct inode *inode, struct file *file);
 /* keeps track of minor numbers used [0,1,2,3] */
 static int numMinors;
 
+/* phrases to track */
 char booga_String[] = "booga! booga!";
 char nekas_String[] = "googoo! gaagaa!";
 char googoos_String[] = "neka! maka!";
