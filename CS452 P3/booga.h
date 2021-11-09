@@ -20,7 +20,7 @@
 /*
  * The different configurable parameters
  */
-struct example_stats { // updated to match proc entries needed per project specs
+struct booga_stats { // updated to match proc entries needed per project specs
 	long int booga0_Opens;
     long int booga1_Opens;
     long int booga2_Opens;
