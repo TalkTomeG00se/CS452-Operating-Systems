@@ -16,7 +16,7 @@
 #include "booga.h"        /* local definitions */
 #include <linux/random.h> /* needed for random num generation */
 #include <linux/string.h> /* needed for string usages */
-#include <linux/sched/signal.h> /* needed for SIGTERM usage */
+#include <linux/signal.h> /* needed for SIGTERM usage */
 
 
 
