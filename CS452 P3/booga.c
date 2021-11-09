@@ -177,11 +177,11 @@ static ssize_t booga_read (struct file *filp, char *buf, size_t count, loff_t *f
 
         for(i = 0; i <= count; i += strlen(phrase)){
 
-            if(i < count - strln(phrase)){
+            if(i < (count - strlen(phrase))){
 
-                strncpy(temp, phrase, strln(phrase));
+                strncpy(temp, phrase, strlen(phrase));
 
-                temp += strln(phrase);
+                temp += strlen(phrase);
 
             } else {
 
