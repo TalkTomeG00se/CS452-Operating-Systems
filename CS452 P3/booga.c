@@ -143,7 +143,7 @@ static ssize_t booga_read (struct file *filp, char *buf, size_t count, loff_t *f
 
         boogaString = phrases[randNum]; // grabs a random phrase
 
-		booga_device_stats->numPhrases[randNum]; // tracks how many times tha phrase was chosen
+		booga_device_stats->numPhrases[randNum]++; // tracks how many times tha phrase was chosen
 
 		while(index < count){
 
