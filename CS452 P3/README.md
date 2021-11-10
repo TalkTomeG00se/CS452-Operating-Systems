@@ -33,7 +33,7 @@ This project requires various sudo commands.
    - Note: Also ensure that you have read/write/execute priveleges on the repo and all files in it: chmod -R 777 directoryName
 2. To test, run the following commands in order:
    - sudo ./booga_load
-   - Then run various of this command: ./test-booga <0,1,2 or 3> <num characters> <read or write>. Example: ./test-booga 0 100 read
+   - Then run various of this command: sudo ./test-booga <0,1,2 or 3> <num characters> <read or write>. Example: sudo ./test-booga 0 100 read
 3. To see results run: at /proc/driver/booga
 4. Run: sudo ./booga_unload
  
