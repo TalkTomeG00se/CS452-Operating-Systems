@@ -30,7 +30,7 @@ test-booga.c - test srcript for manual testing
 This project requires various sudo commands.
 1. In the directory containnig all the files, run the following: sudo make
    - Note: if this does not work, or throws a compiler error, ensure the Modules.symvers file is deleted
-   - Note: Also ensure that you have read/write/execute priveleges on the repo and all files in it: chmod -R 777 <directory>
+   - Note: Also ensure that you have read/write/execute priveleges on the repo and all files in it: chmod -R 777 directoryName
 2. To test, run the following commands in order:
    - sudo ./booga_load
    - Then run various of this command: ./test-booga <0,1,2 or 3> <num characters> <read or write>. Example: ./test-booga 0 100 read
