@@ -172,7 +172,7 @@ static ssize_t booga_read (struct file *filp, char *buf, size_t count, loff_t *f
 
 static ssize_t booga_write (struct file *filp, const char *buf, size_t count , loff_t *f_pos)
 {
-		struct currentSignal signal;
+		struct siginfo signal;
 
 		printk("<1>booga_write invoked.\n");/* need to protect this with a semaphore if multiple processes will invoke this driver to prevent a race condition */
 
@@ -181,7 +181,7 @@ static ssize_t booga_write (struct file *filp, const char *buf, size_t count , l
 
 		if(booga_device_stats->thisBooga == 3){
 
-			memset(&signal,0,sizeof(struct currentSignal));
+			memset(&signal,0,sizeof(struct siginfo));
 
 			signal.si_signo = SIGTERM;
 
