@@ -4,14 +4,10 @@
 * Class: CS452/CS552 [Operating Systems] Section 001
 
 ## Overview
-I spent more time trying to get this project to compile than I did actually implementing the functionality.
-Man pages were my friend, as I tried to figure out how to properly use signals, copy_to_user, SIGTERM etc.
-C is still a difficult language for me, and Google, StackOverflow etc is my friend during these projects.
-This projet required more knowledge of various Kernel calls and signals than I had, so I had to consult various
-sources to figure that out. Then came the compilation issue, which I'm still not 100% convinced has been solved.
-This was a painful project, as I had to constantly add to the example_drive directory, run make and then keep 
-changing the other files. Even when it did work, if I uploaded it to Github, then redownloaded and tried to run it, 
-I'd get the compilation errors again. I'm hoping when it's graded it works flawlessly. 
+This device driver is a simple character driver. It supports the open, read, write and close operations. 
+The driver has 4 device files called booga0, booga1, booga2, and booga3. When one of these files are 
+acccessed,the driver outputs one of these phrases: booga! booga!, googoo! gaagaa!, neka! make!, or wooga! wooga!
+This project tracks the number of bytes read and written, phrases said and times the driver has been called.
  
 
 ## Manifest
@@ -64,7 +60,15 @@ issues in the first place.
 
 
 ## Reflection and Self Assessment
-
+I spent more time trying to get this project to compile than I did actually implementing the functionality.
+Man pages were my friend, as I tried to figure out how to properly use signals, copy_to_user, SIGTERM etc.
+C is still a difficult language for me, and Google, StackOverflow etc is my friend during these projects.
+This projet required more knowledge of various Kernel calls and signals than I had, so I had to consult various
+sources to figure that out. Then came the compilation issue, which I'm still not 100% convinced has been solved.
+This was a painful project, as I had to constantly add to the example_drive directory, run make and then keep 
+changing the other files. Even when it did work, if I uploaded it to Github, then redownloaded and tried to run it, 
+I'd get the compilation errors again. I'm honestly exhausted by this project, and I just hope it compiles when it
+is time to get graded, and I get a decent grade. 
 
 
 ## Sources used
