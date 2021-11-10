@@ -17,8 +17,6 @@
 #include <linux/random.h> /* needed for random num generation */
 #include <linux/string.h> /* needed for string usages */
 #include <linux/signal.h> /* needed for SIGTERM usage */
-#include <linux/semaphore.h>
-#include <linux/device.h>
 #include <linux/uaccess.h>
 
 
