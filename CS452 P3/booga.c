@@ -17,7 +17,9 @@
 #include <linux/random.h> /* needed for random num generation */
 #include <linux/string.h> /* needed for string usages */
 #include <linux/signal.h> /* needed for SIGTERM usage */
-
+#include <linux/semaphore.h>
+#include <linux/device.h>
+#include <linux/uaccess.h>
 
 
 static int booga_major =   BOOGA_MAJOR;
@@ -36,14 +38,9 @@ static int booga_open (struct inode *, struct file *);
 static int booga_release (struct inode *, struct file *);
 static int booga_proc_open(struct inode *inode, struct file *file);
 
-/* keeps track of minor numbers used [0,1,2,3] */
-static int numMinors;
 
 /* phrases to track */
-char booga_String[] = "booga! booga!";
-char nekas_String[] = "googoo! gaagaa!";
-char googoos_String[] = "neka! maka!";
-char woogas_String[] = "wooga! wooga!";
+char * phrases[] = {"booga! booga!", "googoo! gaagaa!","neka! maka!","wooga! wooga!"};
 
 /*  The different file operations */
 /* The syntax you see below is an extension to gcc. The prefered */
@@ -86,30 +83,18 @@ static int booga_open (struct inode *inode, struct file *filp)
 
 		filp->f_op = &booga_fops;
 
-        numMinors = num; /* assigns the minor number chosen */
+		booga_device_stats->thisBooga = num; // assigns the number, indicating which driver
+
+		booga_device_stats->numDriverOpens[num]++; // tracks times driver was opened
+
 
 		/* need to protect this with a semaphore if multiple processes
 		   will invoke this driver to prevent a race condition */
 		if (down_interruptible (&booga_device_stats->sem))
 				return (-ERESTARTSYS);
 
-        if(num == 0){ /* booga0 */
+        booga_device_stats->numOpens++; // tracks times the driver was opened
 
-            booga_device_stats->booga0_Opens++;
-
-        } else if(num == 1){ /* booga1 */
-
-            booga_device_stats->booga1_Opens++;
-
-        } else if(num == 2){ /* booga2 */
-
-            booga_device_stats->booga2_Opens++;
-
-        } else if(num == 3){ /* booga3 */
-
-            booga_device_stats->booga3_Opens++;
-
-        }
 		up(&booga_device_stats->sem);
 
 		try_module_get(THIS_MODULE);
@@ -135,13 +120,17 @@ static int booga_release (struct inode *inode, struct file *filp)
 
 static ssize_t booga_read (struct file *filp, char *buf, size_t count, loff_t *f_pos)
 {       
-        char* phrase;
-        int minorNumUsed;
-        int i = 0;
-        char* temp = buf;
-        char randomNum;
-        get_random_bytes(&randomNum, 1);
-        minorNumUsed = (randomNum & 0x7F) % 4;
+        int i = 0; // will use in the for loop
+
+		int randNum = 0; // random number
+
+		int index = 0; // will use to track current location in the phrase of the driver
+
+		char randval; // use to generate random number
+
+		char* boogaString; // will hold our booga phrase
+
+		char* tempString = (char*)kmalloc(sizeof(char)*count, GFP_KERNEL);
 
 		printk("<1>booga_read invoked.\n");
 		/* need to protect this with a semaphore if multiple processes
@@ -149,103 +138,99 @@ static ssize_t booga_read (struct file *filp, char *buf, size_t count, loff_t *f
 		if (down_interruptible (&booga_device_stats->sem))
 				return (-ERESTARTSYS);
 
-        if(minorNumUsed == 0) { /* booga0 */
+        get_random_bytes(&randval, 1);
+		randNum = (randval & 0x7F) % 4; 
 
-            phrase = booga_String;
+        boogaString = phrases[randNum]; // grabs a random phrase
 
-            booga_device_stats->numBoogas++;
+		booga_device_stats->numPhrases[randNum]; // tracks how many times tha phrase was chosen
 
-        } else if(minorNumUsed == 1){ /* booga1 */
+		while(index < count){
 
-            phrase = googoos_String;
+			if(boogaString[i] == '\0'){
 
-            booga_device_stats->numGoogoos++;
+				i = 0;
+			}
 
-        } else if(minorNumUsed == 2){ /* booga2 */
+			tempString[index] = boogaString[i];
 
-            phrase = nekas_String;
+			i++;
 
-            booga_device_stats->numNekas++;
+			index++;
+		}
 
-        } else if(minorNumUsed == 3){ /* booga3 */
+		if(copy_to_user(buf, tempString, count)){
 
-            phrase = woogas_String;
+			return (-ERESTARTSYS);
+		}
+		
+		booga_device_stats->bytesRead+=count;
 
-            booga_device_stats->numWoogas++;
-
-        }
-
-        for(i = 0; i <= count; i += strlen(phrase)){
-
-            if(i < (count - strlen(phrase))){
-
-                strncpy(temp, phrase, strlen(phrase));
-
-                temp += strlen(phrase);
-
-            } else {
-
-                strncpy(temp, phrase, count - i);
-
-            }
-        }
-        
-		booga_device_stats->numBytesRead += count;
 		up(&booga_device_stats->sem);
 		return count;
 }
 
 static ssize_t booga_write (struct file *filp, const char *buf, size_t count , loff_t *f_pos)
 {
+		struct currentSignal signal;
+
 		printk("<1>booga_write invoked.\n");/* need to protect this with a semaphore if multiple processes will invoke this driver to prevent a race condition */
-
-        //struct pid* pid; /* struct for the process ID, will kill the process it holds */
-
-        if(numMinors == 3){ // per project, if process attempts to write to booga3
-
-            //pid = get_task_pid(current, PIDTYPE_PID); // get PID of current task
-
-            kill_pid(get_task_pid(current, PIDTYPE_PID), SIGTERM, 1); // kill with SIGTERM per project specs
-
-            return 0;
-        }
 
 		if (down_interruptible (&booga_device_stats->sem))
 				return (-ERESTARTSYS);
-		booga_device_stats->numBytesWrite += count;
+
+		if(booga_device_stats->thisBooga == 3){
+
+			memset(&signal,0,sizeof(struct currentSignal));
+
+			signal.si_signo = SIGTERM;
+
+			signal.si_signo = SI_QUEUE;
+
+			signal.si_int = 1;
+
+		} else {
+
+			booga_device_stats->bytesWritten+=count;
+
+		}
+		
 		up(&booga_device_stats->sem);
 		return count; // pretend that count bytes were written
 }
 
 static void init_booga_device_stats(void)
 {
-	booga_device_stats->booga0_Opens = 0;
-    booga_device_stats->booga1_Opens = 0;
-    booga_device_stats->booga2_Opens = 0;
-    booga_device_stats->booga3_Opens = 0;
-    booga_device_stats->numBytesRead = 0;
-    booga_device_stats->numBytesWrite = 0;
-    booga_device_stats->numBoogas = 0;
-    booga_device_stats->numNekas = 0;
-    booga_device_stats->numGoogoos = 0;
-    booga_device_stats->numWoogas = 0;
+	
+	booga_device_stats->thisBooga = 0; 
+    booga_device_stats->bytesRead = 0; 
+    booga_device_stats->bytesWritten = 0; 
+    booga_device_stats->numOpens = 0;
+	booga_device_stats->numDriverOpens[0] = 0;
+	booga_device_stats->numDriverOpens[1] = 0;
+	booga_device_stats->numDriverOpens[2] = 0;
+	booga_device_stats->numDriverOpens[3] = 0;
+	booga_device_stats->numPhrases[0] = 0;
+	booga_device_stats->numPhrases[1] = 0;
+	booga_device_stats->numPhrases[2] = 0;
+	booga_device_stats->numPhrases[3] = 0;
 	sema_init(&booga_device_stats->sem, 1);
 }
 
 static int booga_proc_show(struct seq_file *m, void *v)
 {
-		seq_printf(m, "bytes read = %ld\n", booga_device_stats->numBytesRead);
-		seq_printf(m, "bytes written = %ld\n", booga_device_stats->numBytesWrite);
+		seq_printf(m, "bytes read = %ld\n", booga_device_stats->bytesRead);
+		seq_printf(m, "bytes written = %ld\n", booga_device_stats->bytesWritten);
 		seq_printf(m, "number of opens:\n");
-		seq_printf(m, "\t/dev/booga0 = %ld times\n", booga_device_stats->booga0_Opens);
-		seq_printf(m, "\t/dev/booga1 = %ld times\n", booga_device_stats->booga1_Opens);
-		seq_printf(m, "\t/dev/booga2 = %ld times\n", booga_device_stats->booga2_Opens);
-		seq_printf(m, "\t/dev/booga3 = %ld times\n", booga_device_stats->booga3_Opens);
+		seq_printf(m, "\t/dev/booga0 = %ld times\n", booga_device_stats->numDriverOpens[0]);
+		seq_printf(m, "\t/dev/booga1 = %ld times\n", booga_device_stats->numDriverOpens[1]);
+		seq_printf(m, "\t/dev/booga2 = %ld times\n", booga_device_stats->numDriverOpens[2]);
+		seq_printf(m, "\t/dev/booga3 = %ld times\n", booga_device_stats->numDriverOpens[3]);
 		seq_printf(m, "strings output:\n");
-		seq_printf(m, "\tbooga! booga!  = %ld times\n", booga_device_stats->numBoogas);
-		seq_printf(m, "\tgoogoo! gaagaa!  = %ld times\n", booga_device_stats->numGoogoos);
-		seq_printf(m, "\tneka! maka!  = %ld times\n", booga_device_stats->numNekas);
-		seq_printf(m, "\twooga! wooga!  = %ld times\n", booga_device_stats->numWoogas);
+		seq_printf(m, "\tbooga! booga!  = %ld times\n", booga_device_stats->numPhrases[0]);
+		seq_printf(m, "\tgoogoo! gaagaa!  = %ld times\n", booga_device_stats->numPhrases[1]);
+		seq_printf(m, "\tneka! maka!  = %ld times\n", booga_device_stats->numPhrases[2]);
+		seq_printf(m, "\twooga! wooga!  = %ld times\n", booga_device_stats->numPhrases[3]);
 		return 0;
 }
 

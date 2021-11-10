@@ -22,16 +22,12 @@
  * The different configurable parameters
  */
 struct booga_stats { // updated to match proc entries needed per project specs
-	long int booga0_Opens;
-    long int booga1_Opens;
-    long int booga2_Opens;
-    long int booga3_Opens;
-    long int numBytesRead;
-    long int numBytesWrite;
-    long int numBoogas;
-    long int numNekas;
-    long int numGoogoos;
-    long int numWoogas;
+	long int numPhrases[4]; // holds our 4 strings
+    long int numDriverOpens[4]; // holds our 4 minor numbers [0,1,2,3]
+    long int thisBooga; // will be used to identify device booga0, booga1, booga2, or booga3
+    long int bytesRead; // tracks bytes read
+    long int bytesWritten; // tracks bytes written
+    long int numOpens; // tracks number of times drive was opened
 	struct semaphore sem;
 };
 typedef struct booga_stats booga_stats;

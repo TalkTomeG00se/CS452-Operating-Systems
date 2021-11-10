@@ -33,3 +33,4 @@ https://www.rdocumentation.org/packages/installr/versions/0.23.2/topics/kill_pid
 https://man7.org/linux/man-pages/man7/signal.7.html
 https://docs.huihoo.com/doxygen/linux/kernel/3.7/pid_8h.html#a52cb632565571176cbfe87febc340099
 https://www.tutorialspoint.com/cprogramming/c_strings.htm
+https://stackoverflow.com/questions/1088622/how-do-i-create-an-array-of-strings-in-c/1095006
