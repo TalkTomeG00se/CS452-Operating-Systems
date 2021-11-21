@@ -83,7 +83,7 @@ static int booga_open (struct inode *inode, struct file *filp)
 
 		booga_device_stats->thisBooga = num; // assigns the number, indicating which driver
 
-		booga_device_stats->numDriverOpens[num]++; // tracks times driver was opened
+		booga_device_stats->numDriverOpens[num]++; // tracks times specific driver was opened
 
 
 		/* need to protect this with a semaphore if multiple processes
@@ -91,7 +91,7 @@ static int booga_open (struct inode *inode, struct file *filp)
 		if (down_interruptible (&booga_device_stats->sem))
 				return (-ERESTARTSYS);
 
-        booga_device_stats->numOpens++; // tracks times the driver was opened
+        booga_device_stats->numOpens++; // tracks times the drivers were opened
 
 		up(&booga_device_stats->sem);
 
