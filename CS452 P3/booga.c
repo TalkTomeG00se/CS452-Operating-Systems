@@ -17,7 +17,7 @@
 #include <linux/random.h> /* needed for random num generation */
 #include <linux/string.h> /* needed for string usages */
 #include <linux/signal.h> /* needed for SIGTERM usage */
-#include <linux/uaccess.h>
+#include <linux/uaccess.h> /* needed for siginfo */
 
 
 static int booga_major =   BOOGA_MAJOR;
@@ -128,7 +128,7 @@ static ssize_t booga_read (struct file *filp, char *buf, size_t count, loff_t *f
 
 		char* boogaString; // will hold our booga phrase
 
-		char* tempString = (char*)kmalloc(sizeof(char)*count, GFP_KERNEL);
+		char* tempString = (char*)kmalloc(sizeof(char)*count, GFP_KERNEL); // will hold our temp string, which will be copied
 
 		printk("<1>booga_read invoked.\n");
 		/* need to protect this with a semaphore if multiple processes
@@ -136,33 +136,33 @@ static ssize_t booga_read (struct file *filp, char *buf, size_t count, loff_t *f
 		if (down_interruptible (&booga_device_stats->sem))
 				return (-ERESTARTSYS);
 
-        get_random_bytes(&randval, 1);
+        get_random_bytes(&randval, 1); // getting random number
 		randNum = (randval & 0x7F) % 4; 
 
         boogaString = phrases[randNum]; // grabs a random phrase
 
 		booga_device_stats->numPhrases[randNum]++; // tracks how many times tha phrase was chosen
 
-		while(index < count){
+		while(index < count){ // if our index is less than the size
 
-			if(boogaString[i] == '\0'){
+			if(boogaString[i] == '\0') { // checking for end of string
 
 				i = 0;
 			}
 
-			tempString[index] = boogaString[i];
+			tempString[index] = boogaString[i]; 
 
-			i++;
+			i++; // increments i
 
-			index++;
+			index++; // moves our index
 		}
 
-		if(copy_to_user(buf, tempString, count)){
+		if(copy_to_user(buf, tempString, count)){ // copying to user space
 
 			return (-ERESTARTSYS);
 		}
 		
-		booga_device_stats->bytesRead+=count;
+		booga_device_stats->bytesRead+=count; // increases our bytes read
 
 		up(&booga_device_stats->sem);
 		return count;
@@ -170,26 +170,26 @@ static ssize_t booga_read (struct file *filp, char *buf, size_t count, loff_t *f
 
 static ssize_t booga_write (struct file *filp, const char *buf, size_t count , loff_t *f_pos)
 {
-		struct siginfo signal;
+		struct siginfo signal; // getting siginfo
 
 		printk("<1>booga_write invoked.\n");/* need to protect this with a semaphore if multiple processes will invoke this driver to prevent a race condition */
 
 		if (down_interruptible (&booga_device_stats->sem))
 				return (-ERESTARTSYS);
 
-		if(booga_device_stats->thisBooga == 3){
+		if(booga_device_stats->thisBooga == 3){ // checking for booga3 call
 
-			memset(&signal,0,sizeof(struct siginfo));
+			memset(&signal,0,sizeof(struct siginfo)); // fills memory with all 0 bytes
 
-			signal.si_signo = SIGTERM;
+			signal.si_signo = SIGTERM; // setting signal number, terminating program
 
-			signal.si_signo = SI_QUEUE;
+			signal.si_signo = SI_QUEUE; // sending the signal
 
-			signal.si_int = 1;
+			signal.si_int = 1; // numeric value of 1 is SIGHUP, signaling the termination of the process
 
 		} else {
 
-			booga_device_stats->bytesWritten+=count;
+			booga_device_stats->bytesWritten+=count; // increases bytes written
 
 		}
 		
@@ -199,7 +199,7 @@ static ssize_t booga_write (struct file *filp, const char *buf, size_t count , l
 
 static void init_booga_device_stats(void)
 {
-	
+	// initialiazes all values to 0 
 	booga_device_stats->thisBooga = 0; 
     booga_device_stats->bytesRead = 0; 
     booga_device_stats->bytesWritten = 0; 
@@ -216,7 +216,8 @@ static void init_booga_device_stats(void)
 }
 
 static int booga_proc_show(struct seq_file *m, void *v)
-{
+{		
+		// prints all values, spaced out per project description
 		seq_printf(m, "bytes read = %ld\n", booga_device_stats->bytesRead);
 		seq_printf(m, "bytes written = %ld\n", booga_device_stats->bytesWritten);
 		seq_printf(m, "number of opens:\n");
