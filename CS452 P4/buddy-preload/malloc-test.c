@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 	if (verbosity > TERSE)
 		system("clear");
 
-	for (i = 0; i < MAX_ITEMS; i++) {
+	for (i =0; i < MAX_ITEMS; i++) {
 		x[i].ptr = NULL;
 		x[i].size = 0;
 	}
@@ -93,9 +93,8 @@ int main(int argc, char *argv[])
 		
 	}
 	
-	for (i = 0; i < MAX_ITEMS; i++) {
-        if (x[i].ptr) 
-			free(x[i].ptr);
+	for (i =0; i < MAX_ITEMS; i++) {
+        if(x[i].ptr) free(x[i].ptr);
     }
 	exit(0);	
 }

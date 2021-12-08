@@ -1,4 +1,3 @@
-
 /**
  * Implementation of a memory allocator based on the Buddy System.
  * See Knuth Art of Computer Programming, vol. 1, page 442. 
@@ -8,11 +7,14 @@
  * field only. All allocations are done in powers of two. All requests
  * are rounded up to the next power of two.
  * 
- * @author  TBD
+ * @author  Colten Davis
  * 
  */
- 
+
+
+#include <../buddy-non-preload/buddy.h> // only way to get rid of implicit function warnings. Link to stackoverflow in sources in README
 #include "buddy.h"
+
 int initialized = FALSE;
 
 /* the header for an available block */
@@ -30,7 +32,7 @@ const int UNUSED = -1;
 /* supports memory upto 2^(MAX_KVAL-1) (or 32 GB) in size */
 #define  MAX_KVAL  35
 
-/* default memory allocation is 512MB */
+/* deafult memory allocation is 512MB */
 const size_t DEFAULT_MAX_MEM_SIZE = 512*1024*1024;
 
 
@@ -45,34 +47,42 @@ struct pool {
 
 
 
-int buddy_init(size_t size) { 
-    return TRUE;
+void buddy_init(size_t size) { // changed from int to void, kept saying I had to cast the return value...unsure why.
+
+    return buddy_init(size);
 }
 
 
-void *malloc(size_t size)
-{
-	return NULL;
+void *malloc(size_t size) {
+
+	return buddy_malloc(size);
+
 }
 
 
-void *calloc(size_t nmemb, size_t size) 
-{
-	return NULL;
+void *calloc(size_t nmemb, size_t size) {
+
+	return buddy_calloc(nmemb, size);
+
 }
 
-void *realloc(void *ptr, size_t size) 
-{
-	return NULL;
-}
+void *realloc(void *ptr, size_t size) {
 
+	return buddy_realloc(ptr, size);
 
-void free(void *ptr) 
-{
 }
 
 
-void printBuddyLists()
-{
+void free(void *ptr) {
+
+	buddy_free(ptr);
+
+}
+
+
+void printBuddyLists(void)	{ // added void to parameter, no more void warnings during compilation
+
+	printBuddyLists();
+
 }
 

@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 			exit(0); 
 	}
 	
-	for (i = 0; i < MAX_ITEMS; i++) {
+	for (i =0; i < MAX_ITEMS; i++) {
 		x[i].ptr = NULL;
 		x[i].size = 0;
 	}
@@ -112,9 +112,8 @@ int main(int argc, char *argv[])
 	printBuddySystemStats();
 #endif
 	
-	for (i = 0; i < MAX_ITEMS; i++) {
-        if (x[i].ptr) 
-			buddy_free(x[i].ptr);
+	for (i =0; i < MAX_ITEMS; i++) {
+        if(x[i].ptr) buddy_free(x[i].ptr);
     }
 	exit(0);	
 }

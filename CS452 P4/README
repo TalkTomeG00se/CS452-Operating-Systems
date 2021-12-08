@@ -1,0 +1,89 @@
+## Project 4 - Buddy System
+
+* Author: Colten Davis
+* Class: CS452/CS552 [Operating Systems] Section 001
+
+## Overview
+In this project we implemented our own memory management system based on the buddy memory allocation algorithm. Custom malloc and free
+functions were written to replace the standard ones in the C library. The goal was to have our malloc and free function just like the 
+standard library commands; correctly allocating, storing and freeing blocks at will. 
+ 
+
+## Manifest
+Makefile
+buddy-non-preload
+    - malloc-test.c
+    - buddy.h
+    - buddy.c
+    - buddy-unit-test.c
+    - buddy-test.c
+    - Makefile
+buddy-preload
+    - Makefile
+    - malloc-test.c
+    - buddy.h
+    - buddy.c
+
+
+## Building the project
+1. First run "make clean" to ensure a fresh start, from the top directory.
+2. Then run the following commands from the top directory as well:
+    - make
+    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
+
+You are now ready to test the program.
+ 
+## Features and usage
+This program is a custom memory manager modled after the buddy system. It simulates memory allocation using our own
+custom malloc/free functions, along with various other helper functions. It is run against several test scripts to see if
+memory allocation is working correctly, allocating various block sizes, freeing them, storing them etc. The usage of the script
+for us was limited to running it against test scripts and also interposing malloc in our previous mergesort project.
+
+
+## Testing
+The project was built using instructions above, then the following commmands were run, using the given test scripts and interposing malloc:
+- LD_PRELOAD=./libbuddy.so malloc-test <num of tests> [random seed] [silent|terse|verbose|interactive]
+- LD_PRELOAD=./libbuddy.so buddy-unit-test <num of tests> [random seed] [silent|terse|verbose|interactive]
+- LD_PRELOAD=./libbuddy.so buddy-test <num of tests> [random seed] [silent|terse|verbose|interactive] 
+
+Currently failing allocating 1000000000 block size. 
+
+
+## Known Bugs
+First known bug is that buddy-unit-test is failing to allocate a block of size 1000000000. Unknown reason as this time.
+I didn't change anything in that script, since I didn't really know what to change. Other than that, no know bugs. 
+
+Also at this time, I'm not sure if it works with mergesort. I just didn't have time to test it at this point. 
+
+## Reflection and Self Assessment
+This project was obviously the hardest by far, and by sheer luck I think I have it mostly working. I am 100% fine saying that
+this project is mostly just glued together parts of pieces from stackoverflow, geeksforgeeks, github, anything I could find. I had
+to watch youtube videos, read various documents, powerpoints, short blogs etc just to understand what I needed to do. Lucikly the buddy
+system seems to be a project people tackle for various academic and personal projects. I would say having concluded this project, I am still
+not used to the C language, and much prefer newer more optimized languages. C structs and pointers still confuse me, and without all the sources 
+I used, I wouldn't have made it far into this project, if at all. I wished I understood it more. I do have some experience with doubly linked lists from
+Java and that seems to be similar to this, at least it helped me to think that way, moving where the current head is, setting the next and previous nodes etc.
+So I was used to doing all the next.previous, or next.previous.next stuff, but just making sure I was keeping track of where I was, as a nightmare. 
+Then I ran into compilaiton warnings, and it was just a hastle. My brain hurts from this project. 
+
+
+
+## Sources used
+https://stackoverflow.com/questions/7581408/including-a-header-file-from-another-directory/7581447
+https://stackoverflow.com/questions/8621507/including-header-files-from-different-directories
+https://www.geeksforgeeks.org/buddy-memory-allocation-program-set-1-allocation/
+https://www.geeksforgeeks.org/buddy-memory-allocation-program-set-2-deallocation/
+https://github.com/lotabout/buddy-system/blob/master/buddy.c
+https://tutorialspoint.dev/computer-science/operating-systems/program-for-buddy-memory-allocation-scheme-in-operating-systems-set-2-deallocation
+https://www.youtube.com/watch?v=t49Vgj5MvMg&ab_channel=hunterhaislip
+https://csqjxiao.github.io/PersonalPage/csqjxiao_files/OS2015/UIUC/08-MemoryMalloc.pdf
+https://en.wikipedia.org/wiki/Buddy_memory_allocation
+http://tharikasblogs.blogspot.com/p/how-to-write-your-own-malloc-and-free.html
+https://developer.ibm.com/tutorials/au-memorymanager/
+https://www.geeksforgeeks.org/dynamic-memory-allocation-in-c-using-malloc-calloc-free-and-realloc/
+https://arjunsreedharan.org/post/148675821737/write-a-simple-memory-allocator
+https://www.bogotobogo.com/cplusplus/memoryallocation.php
+https://stackoverflow.com/questions/16036595/sbrk0-and-sbrksize-both-return-the-same-address
+https://stackoverflow.com/questions/14467173/bit-setting-and-bit-shifting-in-ansi-c
+https://github.com/ashokgelal/dash/blob/master/buddy/libsrc/buddy.c 
+https://riptutorial.com/c/example/10572/void--pointers-as-arguments-and-return-values-to-standard-functions

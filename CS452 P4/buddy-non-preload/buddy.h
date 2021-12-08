@@ -16,7 +16,7 @@
  *
  * @return  TRUE if successful, ENOMEM otherwise.
  */
-int buddy_init(size_t);
+void buddy_init(size_t);
 
 
 /**
