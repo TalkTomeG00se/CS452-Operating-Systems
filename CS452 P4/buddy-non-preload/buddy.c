@@ -34,7 +34,7 @@ const int UNUSED = -1;
 #define  MAX_KVAL  37 
 #define  MIN_KVAL  10  // easy value for our min kval
 #define  KVAL      29  // default value for our kval
-#define  NO_MEM    NULL // defiing no more memory as NULL for convienece
+#define  NO_MEM    NULL // defining no more memory as NULL for convienece
 
 static size_t roundUp(size_t);
 static int getKval(size_t);
