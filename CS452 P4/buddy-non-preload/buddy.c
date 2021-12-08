@@ -32,9 +32,9 @@ const int UNUSED = -1;
 
 /* supports memory upto 2^(MAX_KVAL-1) (or 64 GB) in size */
 #define  MAX_KVAL  37 
-#define  MIN_KVAL  10  
-#define  KVAL      29  
-#define  NO_MEM    NULL
+#define  MIN_KVAL  10  // easy value for our min kval
+#define  KVAL      29  // default value for our kval
+#define  NO_MEM    NULL // defiing no more memory as NULL for convienece
 
 static size_t roundUp(size_t);
 static int getKval(size_t);
