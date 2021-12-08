@@ -29,7 +29,7 @@ buddy-preload
 1. First run "make clean" to ensure a fresh start, from the top directory.
 2. Then run the following commands from the top directory as well:
     - make
-    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.
+    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:. ( Note: make sure to include the period at the end of the command )
 
 You are now ready to test the program.
  
