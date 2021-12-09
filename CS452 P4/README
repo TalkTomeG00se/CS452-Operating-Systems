@@ -41,20 +41,21 @@ for us was limited to running it against test scripts and also interposing mallo
 
 
 ## Testing
-The project was built using instructions above, then the following commmands were run, using the given test scripts and interposing malloc:
+The project was built using instructions above, then the following commmands were run, using the given test scripts and interposing malloc, in the non-preload folder:
 - LD_PRELOAD=./libbuddy.so malloc-test <num of tests> [random seed] [silent|terse|verbose|interactive]
 - LD_PRELOAD=./libbuddy.so buddy-unit-test <num of tests> [random seed] [silent|terse|verbose|interactive]
 - LD_PRELOAD=./libbuddy.so buddy-test <num of tests> [random seed] [silent|terse|verbose|interactive] 
 
-Currently failing allocating 1000000000 block size. 
 
-Also getting segmentation fault when running the malloc-test script in the preload folder. 
+Getting segmentation fault when running the malloc-test script in the preload folder. 
 
 
 ## Known Bugs
 It can't even run the malloc-test in the preload folder. Honeslty I have no idea why, and I just don't have the 
 energy or the skills to figure it out. If I had more time I think I could figure it out I would. Honestly, I 
 forgot to even run that test until pretty late; I got stuck focusing on passing the tests in the non-preload folder.
+Probably because I didn't even make it to write a calloc or realloc functions beacuse I didn't see them in the test 
+scripts. 
 
 
 ## Reflection and Self Assessment
