@@ -48,12 +48,14 @@ The project was built using instructions above, then the following commmands wer
 
 Currently failing allocating 1000000000 block size. 
 
+Also getting segmentation fault when running the malloc-test script in the preload folder. 
+
 
 ## Known Bugs
-First known bug is that buddy-unit-test is failing to allocate a block of size 1000000000. Unknown reason as this time.
-I didn't change anything in that script, since I didn't really know what to change. Other than that, no know bugs. 
+It can't even run the malloc-test in the preload folder. Honeslty I have no idea why, and I just don't have the 
+energy or the skills to figure it out. If I had more time I think I could figure it out I would. Honestly, I 
+forgot to even run that test until pretty late; I got stuck focusing on passing the tests in the non-preload folder.
 
-Also at this time, I'm not sure if it works with mergesort. I just didn't have time to test it at this point. 
 
 ## Reflection and Self Assessment
 This project was obviously the hardest by far, and by sheer luck I think I have it mostly working. I am 100% fine saying that
